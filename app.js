@@ -2,8 +2,8 @@
    Supabase is optional for the demo UI. To activate the backend,
    put your Supabase project URL and anon key below, then run supabase.sql.
 */
-const SUPABASE_URL = "YOUR_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://igtjtflqnitogzasfwxh.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_FJqhD6RZLg8ipNGLKGL8NA_A1q7anAY";
 const db = (window.supabase && SUPABASE_URL.startsWith("http"))
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
