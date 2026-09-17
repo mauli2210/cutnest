@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CutNest | Laser Cut Designs</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a>
+    <div class="search"><span>⌕</span><input id="searchInput" placeholder="Search products..." /></div>
+    <nav class="actions">
+      <a href="#products">Products</a>
+      <a href="checkout.html">Account</a>
+      <a class="cart-link" href="cart.html">🛒 Cart <b id="cartCount">0</b></a>
+    </nav>
+  </header>
+
+  <nav class="categories">
+    <a class="active" href="#products">⌂ All</a>
+    <a href="#products" data-category="Home Decor">⌂ Home Decor</a>
+    <a href="#products" data-category="Gifts">🎁 Gifts</a>
+    <a href="#products" data-category="Wall Art">▧ Wall Art</a>
+    <a href="#products" data-category="Office">▣ Office</a>
+    <a href="#products" data-category="Toys">♧ Toys</a>
+    <a href="#products" data-category="Organizers">◇ Organizers</a>
+    <a href="#products" data-category="Models">⬡ Models</a>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">CREATIVE • PERSONAL • LASER READY</p>
+        <h1>Laser Cut Designs<br><em>for a Creative World</em></h1>
+        <p>Explore unique designs. Cut. Create. Inspire.</p>
+        <a class="btn" href="#products">Start Exploring →</a>
+        <div class="benefits">
+          <span>◇ <strong>Unique</strong><small>Designs</small></span>
+          <span>ϟ <strong>Instant</strong><small>Download</small></span>
+          <span>▤ <strong>Laser</strong><small>Ready Files</small></span>
+        </div>
+      </div>
+      <div class="hero-art">✧<div>Cut<br><span>&</span><br>Create</div></div>
+    </section>
+
+    <section id="products" class="section">
+      <div class="section-head">
+        <div><h2>All Products</h2><p id="resultText">Explore our collection</p></div>
+        <select id="sortSelect">
+          <option value="featured">Featured</option>
+          <option value="low">Price: Low to High</option>
+          <option value="high">Price: High to Low</option>
+          <option value="name">Name A-Z</option>
+        </select>
+      </div>
+      <div id="productGrid" class="grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div><a class="brand footer-brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a><p>Unique laser cut designs for a creative world.</p></div>
+    <div><h4>Quick Links</h4><a href="index.html">Home</a><a href="#products">All Products</a><a href="cart.html">Cart</a></div>
+    <div><h4>Help & Support</h4><a href="#">FAQ</a><a href="#">Shipping Policy</a><a href="#">Return & Refund</a></div>
+    <div><h4>Project</h4><p>Mini E-Commerce Demo</p><p>Supabase + Vercel</p></div>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
