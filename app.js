@@ -2,8 +2,8 @@
    Supabase connection: keep your existing Project URL + Publishable key here.
    Never use a Supabase secret/service-role key in this frontend file.
 */
-const SUPABASE_URL = "https://igtjtflqnitogzasfwxh.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_FJqhD6RZLg8ipNGLKGL8NA_A1q7anAY";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 const db = (window.supabase && SUPABASE_URL.startsWith("http"))
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -28,23 +28,24 @@ const demoProducts = [
 let products = [...demoProducts];
 let cart = JSON.parse(localStorage.getItem("cutnest_cart") || "[]");
 let wishlist = JSON.parse(localStorage.getItem("cutnest_wishlist") || "[]");
-const localProductImages = {
-  "Tree Wall Art":"tree-wall-art.svg",
-  "Geometric Deer":"geometric-deer.svg",
-  "Table Organizer":"table-organizer.svg",
-  "Photo Frame":"photo-frame.svg",
-  "Eiffel Tower Model":"eiffel-tower-model.svg",
-  "Happy Birthday Topper":"happy-birthday-topper.svg",
-  "Pen Holder":"pen-holder.svg",
-  "Cat Silhouette":"cat-silhouette.svg",
-  "Wall Clock":"wall-clock.svg",
-  "House Model":"house-model.svg",
-  "Butterfly Wall Art":"butterfly-wall-art.svg",
-  "Plant Stand":"plant-stand.svg",
-  "Key Holder":"key-holder.svg",
-  "Car Model":"car-model.svg",
-  "Mandala Art":"mandala-art.svg"
+const realProductImages = {
+  "Tree Wall Art": "https://images-dublez-cdn.rshop.sk/ret-prod-main/products/d9a6c9a6cd64438c726db64246ed14ae.jpg",
+  "Geometric Deer": "https://media.s-bol.com/m9g2zKvBQQvG/QWA9Zm7/550x550.jpg",
+  "Table Organizer": "https://eduwood.pl/userdata/public/gfx/1570/1000030802.jpg",
+  "Photo Frame": "https://i.etsystatic.com/24961853/r/il/07224e/7597185507/il_1588xN.7597185507_5uvc.jpg",
+  "Eiffel Tower Model": "https://i.etsystatic.com/40112469/r/il/7c7fc5/7451281088/il_794xN.7451281088_n6e4.jpg",
+  "Happy Birthday Topper": "https://www.lovelottie.com.au/cdn/shop/products/60.png?v=1622258328&width=800",
+  "Pen Holder": "https://vector-painter.com/cdn/shop/files/Pen-holder-laser-cut-1_7df5d60c-6567-45ed-a37f-cdf4d1c28517.webp?v=1777413448&width=533",
+  "Cat Silhouette": "https://i.etsystatic.com/42246316/r/il/aa87ff/7663059724/il_794xN.7663059724_b012.jpg",
+  "Wall Clock": "https://i.etsystatic.com/50979072/r/il/45a453/5925253901/il_fullxfull.5925253901_lvaw.jpg",
+  "House Model": "https://i.etsystatic.com/61300150/r/il/d75c6f/7339720336/il_1140xN.7339720336_nap8.jpg",
+  "Butterfly Wall Art": "https://i.etsystatic.com/7409724/r/il/e06986/3836454475/il_794xN.3836454475_cicj.jpg",
+  "Plant Stand": "https://storage-us.atomm.com/resource/xart/result/599655/96ecb7f0-ce05-4891-89f1-3e04eed5896b.png",
+  "Key Holder": "https://littlemakes.com/img/image20_easy-wood-crafts-to-make-and-sell-ideas_creative-key-holders.jpg",
+  "Car Model": "https://cwwh.de/shop/images/product_images/original_images/Porsche%20911%20BJ%2064%20als%203D%20Laser%20Cut%20Holzmodell%2005.jpg",
+  "Mandala Art": "https://i.etsystatic.com/61822528/r/il/5399c3/7203159114/il_1588xN.7203159114_5wnr.jpg"
 };
+
 
 
 function money(n){ return "₹" + Number(n || 0).toLocaleString("en-IN"); }
@@ -88,7 +89,7 @@ function changeQty(id,delta){
   if(x.qty <= 0) removeFromCart(id); else { saveCart(); renderCart(); }
 }
 function productImage(p){
-  const localImage = localProductImages[p.name];
+  const localImage = realProductImages[p.name];
   if(localImage) return `<img loading="lazy" src="${localImage}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`;
   return `<img loading="lazy" src="" alt=""><div class="placeholder">${p.icon||"✦"}</div>`;
 }
@@ -100,11 +101,11 @@ async function loadProducts(){
       // Refresh saved wishlist/cart images after Supabase products load.
       cart = cart.map(item => {
         const p = products.find(x => String(x.id) === String(item.id) || x.name === item.name);
-        return p ? {...item,id:p.id,price:p.price,category:p.category,image:localProductImages[p.name]||p.image||item.image||""} : item;
+        return p ? {...item,id:p.id,price:p.price,category:p.category,image:realProductImages[p.name]||p.image||item.image||""} : item;
       });
       wishlist = wishlist.map(item => {
         const p = products.find(x => String(x.id) === String(item.id) || x.name === item.name);
-        return p ? {...item,id:p.id,price:p.price,category:p.category,image:localProductImages[p.name]||p.image||item.image||""} : item;
+        return p ? {...item,id:p.id,price:p.price,category:p.category,image:realProductImages[p.name]||p.image||item.image||""} : item;
       });
       saveCart(); saveWishlist();
     } else if(error) console.warn("Supabase products could not be loaded:", error.message);

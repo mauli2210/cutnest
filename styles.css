@@ -81,3 +81,7 @@ footer{background:#16202b;color:#e9edf0;padding:45px 5%;display:grid;grid-templa
   .grid{grid-template-columns:1fr}
   .hero h1{font-size:30px}
 }
+
+
+/* Real wooden product photo treatment */
+.product-img img { width:100%; height:100%; object-fit:cover; display:block; background:#f7f5f0; }
