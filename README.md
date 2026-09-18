@@ -15,3 +15,7 @@ The database tables are `products`, `orders`, and `order_items`.
 
 ## Vercel
 The project is a static site and can be deployed directly from the GitHub repository to Vercel.
+
+
+## Product images
+The product cards use local wooden laser-cut style SVG artwork, so images load without relying on external image hosts.

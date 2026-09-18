@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 480">
+<defs>
+ <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d7a05b"/><stop offset="0.45" stop-color="#b97832"/><stop offset="1" stop-color="#8e5125"/></linearGradient>
+ <linearGradient id="wood2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e0ad68"/><stop offset="1" stop-color="#a9652c"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-opacity=".20"/></filter>
+</defs>
+<rect width="600" height="480" fill="#f7f7f5"/>
+<ellipse cx="300" cy="410" rx="190" ry="25" fill="#000" opacity=".10"/>
+<g filter="url(#shadow)" fill="none" stroke="url(#wood)" stroke-linecap="round"><path d="M300 75L250 380M300 75l50 305M250 380h100M265 315h70M275 245h50M285 175h30" stroke-width="14"/><path d="M300 75v-35M290 55h20M260 140h80M270 205h60M245 275h110" stroke-width="10"/></g></svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 480">
+<defs>
+ <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d7a05b"/><stop offset="0.45" stop-color="#b97832"/><stop offset="1" stop-color="#8e5125"/></linearGradient>
+ <linearGradient id="wood2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e0ad68"/><stop offset="1" stop-color="#a9652c"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-opacity=".20"/></filter>
+</defs>
+<rect width="600" height="480" fill="#f7f7f5"/>
+<ellipse cx="300" cy="410" rx="190" ry="25" fill="#000" opacity=".10"/>
+<g filter="url(#shadow)" stroke="#7e4822" stroke-width="10" stroke-linejoin="round"><path d="M120 300l45-95h105l55-55h75l80 150v55H120z" fill="url(#wood)"/><path d="M290 205l55-45h55l55 85H285z" fill="#e5bc7c"/><circle cx="205" cy="355" r="38" fill="#6f3d1b"/><circle cx="430" cy="355" r="38" fill="#6f3d1b"/><circle cx="205" cy="355" r="15" fill="#d9a45f"/><circle cx="430" cy="355" r="15" fill="#d9a45f"/></g></svg>
