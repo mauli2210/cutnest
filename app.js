@@ -2,8 +2,8 @@
    Supabase connection: keep your existing Project URL + Publishable key here.
    Never use a Supabase secret/service-role key in this frontend file.
 */
-const SUPABASE_URL = "https://igtjtflqnitogzasfwxh.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_FJqhD6RZLg8ipNGLKGL8NA_A1q7anAY";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 const db = (window.supabase && SUPABASE_URL.startsWith("http"))
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -27,7 +27,7 @@ const demoProducts = [
 
 let products = [...demoProducts];
 let cart = JSON.parse(localStorage.getItem("cutnest_cart") || "[]");
-let wishlist = JSON.parse(localStorage.getItem("cutnest_wishlist") || "[]");
+let wishlist = JSON.parse(localStorage.getItem("cutnest_wishlist") || "[]");\nconst localProductImages = {\n  "Tree Wall Art":"tree-wall-art.jpg",\n  "Geometric Deer":"geometric-deer.jpg",\n  "Table Organizer":"table-organizer.jpg",\n  "Photo Frame":"photo-frame.jpg",\n  "Eiffel Tower Model":"eiffel-tower-model.jpg",\n  "Happy Birthday Topper":"happy-birthday-topper.jpg",\n  "Pen Holder":"pen-holder.jpg",\n  "Cat Silhouette":"cat-silhouette.jpg",\n  "Wall Clock":"wall-clock.jpg",\n  "House Model":"house-model.jpg",\n  "Butterfly Wall Art":"butterfly-wall-art.jpg",\n  "Plant Stand":"plant-stand.jpg",\n  "Key Holder":"key-holder.jpg",\n  "Car Model":"car-model.jpg",\n  "Mandala Art":"mandala-art.jpg"\n};\n
 
 function money(n){ return "₹" + Number(n || 0).toLocaleString("en-IN"); }
 function saveCart(){ localStorage.setItem("cutnest_cart", JSON.stringify(cart)); updateCounts(); }
@@ -70,7 +70,7 @@ function changeQty(id,delta){
   if(x.qty <= 0) removeFromCart(id); else { saveCart(); renderCart(); }
 }
 function productImage(p){
-  if(p.image) return `<img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`;
+  const localImage = localProductImages[p.name];\n  if(localImage) return `<img loading="lazy" src="${localImage}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`;
   return `<img loading="lazy" src="" alt=""><div class="placeholder">${p.icon||"✦"}</div>`;
 }
 async function loadProducts(){
@@ -81,11 +81,11 @@ async function loadProducts(){
       // Refresh saved wishlist/cart images after Supabase products load.
       cart = cart.map(item => {
         const p = products.find(x => String(x.id) === String(item.id) || x.name === item.name);
-        return p ? {...item,id:p.id,price:p.price,category:p.category,image:p.image||item.image||""} : item;
+        return p ? {...item,id:p.id,price:p.price,category:p.category,image:localProductImages[p.name]||p.image||item.image||""} : item;
       });
       wishlist = wishlist.map(item => {
         const p = products.find(x => String(x.id) === String(item.id) || x.name === item.name);
-        return p ? {...item,id:p.id,price:p.price,category:p.category,image:p.image||item.image||""} : item;
+        return p ? {...item,id:p.id,price:p.price,category:p.category,image:localProductImages[p.name]||p.image||item.image||""} : item;
       });
       saveCart(); saveWishlist();
     } else if(error) console.warn("Supabase products could not be loaded:", error.message);
