@@ -3,34 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CutNest | Checkout</title>
+  <meta name="theme-color" content="#16202b">
+  <title>CutNest | Create Requirement</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
+<body class="page-enter">
 <header class="topbar">
   <a class="brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a>
-  <div class="search"><span>⌕</span><input placeholder="Secure checkout" disabled></div>
-  <nav class="actions"><a href="index.html#products">Products</a><a class="cart-link" href="cart.html">🛒 Cart <b id="cartCount">0</b></a></nav>
+  <div class="search"><span>⌕</span><input placeholder="Requirement details" disabled></div>
+  <nav class="actions"><a class="icon-action" href="wishlist.html">♡ <span>Wishlist</span><b id="wishlistCount">0</b></a><a class="icon-action cart-link" href="cart.html">🛒 <span>Cart</span><b id="cartCount">0</b></a></nav>
 </header>
-<main class="page">
-  <div class="breadcrumbs">Home &nbsp;›&nbsp; Cart &nbsp;›&nbsp; Checkout</div>
-  <div class="page-title"><div><h1>Checkout</h1><p>Complete the demo order below.</p></div></div>
-  <div class="checkout-layout">
+<main class="page checkout-page">
+  <div class="breadcrumbs">Home &nbsp;›&nbsp; Cart &nbsp;›&nbsp; Requirement</div>
+  <div class="page-title"><div><h1>Create Requirement</h1><p>Your selected items are prepared below. Add your details to send the requirement.</p></div></div>
+
+  <div id="checkoutEmpty" class="empty hidden"><div>🛒</div><h2>Your cart is empty</h2><p>Please select products before creating a requirement.</p><a class="btn" href="index.html#products">Explore Products</a></div>
+
+  <div id="checkoutLayout" class="checkout-layout">
+    <section class="receipt-box" id="receiptPreview">
+      <div class="receipt-head"><div><span class="receipt-logo">✦</span><strong>CutNest</strong></div><span class="receipt-badge">ITEM RECEIPT</span></div>
+      <div class="receipt-meta"><span>Requirement Preview</span><span id="receiptDate"></span></div>
+      <div id="checkoutProducts"></div>
+      <div class="receipt-total"><span>Total</span><strong id="checkoutTotal">₹0</strong></div>
+      <p class="receipt-note">This receipt is generated from your selected cart items. Your personal details will be added after submission.</p>
+    </section>
+
     <form id="checkoutForm" class="form-box">
-      <h2>Customer Details</h2>
-      <label>Full Name<input id="name" required placeholder="Enter your name"></label>
-      <label>Email<input id="email" type="email" required placeholder="you@example.com"></label>
-      <label>Phone<input id="phone" required placeholder="10-digit mobile number"></label>
-      <label>Delivery Address<textarea id="address" required rows="4" placeholder="Enter address"></textarea></label>
-      <button class="btn full" type="submit">Place Demo Order →</button>
-      <p class="small-note">This is a mini-project demo. No real payment is processed.</p>
+      <h2>Your Details</h2>
+      <p class="form-intro">Tell us where to contact you and where the requirement should be delivered.</p>
+      <label>Full Name<input id="name" required autocomplete="name" placeholder="Enter your name"></label>
+      <label>Mobile Number<input id="phone" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" autocomplete="tel" placeholder="10-digit mobile number"></label>
+      <label>Email<input id="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
+      <label>Delivery Address<textarea id="address" required rows="4" autocomplete="street-address" placeholder="House / Street / Area / City"></textarea></label>
+      <label>Special Requirement <span class="optional">(optional)</span><textarea id="notes" rows="3" placeholder="Size, colour, customization or any other request"></textarea></label>
+      <button class="btn full" type="submit">Send Requirement & Generate Receipt →</button>
+      <p class="small-note">No online payment is taken. This is a college mini-project requirement demo.</p>
     </form>
-    <aside class="summary"><h2>Order Summary</h2><div id="checkoutProducts"></div><hr><div class="grand"><span>Total</span><strong id="checkoutTotal">₹0</strong></div></aside>
   </div>
-  <div id="success" class="success hidden"><div>✓</div><h2>Order placed successfully!</h2><p id="orderNumber"></p><a class="btn" href="index.html">Continue Shopping</a></div>
+
+  <section id="finalReceipt" class="final-receipt hidden">
+    <div class="final-receipt-top"><div><span class="receipt-logo">✦</span><strong>CutNest</strong></div><span class="success-pill">Requirement Sent ✓</span></div>
+    <h2>Requirement Receipt</h2>
+    <p id="orderNumber"></p>
+    <div class="customer-receipt" id="customerReceipt"></div>
+    <div id="finalItems"></div>
+    <div class="receipt-total"><span>Total</span><strong id="finalTotal">₹0</strong></div>
+    <div class="receipt-actions"><button class="outline-btn" type="button" onclick="window.print()">Print / Save as PDF</button><a class="btn" href="index.html">Continue Shopping</a></div>
+  </section>
 </main>
-<footer><div><a class="brand footer-brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a><p>Demo e-commerce project.</p></div><div><h4>Quick Links</h4><a href="index.html">Home</a><a href="cart.html">Cart</a></div><div><h4>Backend</h4><p>Supabase Database</p></div><div><h4>Deployment</h4><p>Vercel Ready</p></div></footer>
+<footer><div><a class="brand footer-brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a><p>Demo e-commerce requirement flow.</p></div><div><h4>Quick Links</h4><a href="index.html">Home</a><a href="wishlist.html">Wishlist</a><a href="cart.html">Cart</a></div><div><h4>Backend</h4><p>Supabase Database</p></div><div><h4>Deployment</h4><p>Vercel Ready</p></div></footer>
+<div id="toast" class="toast"></div>
 <script src="app.js"></script>
 <script>window.addEventListener('DOMContentLoaded', renderCheckout);</script>
 </body>

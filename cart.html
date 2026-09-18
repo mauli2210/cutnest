@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#16202b">
   <title>CutNest | Your Cart</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body>
+<body class="page-enter">
 <header class="topbar">
   <a class="brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a>
   <div class="search"><span>⌕</span><input placeholder="Search products..." onfocus="location.href='index.html#products'"></div>
-  <nav class="actions"><a href="index.html#products">Products</a><a href="checkout.html">Account</a><a class="cart-link" href="cart.html">🛒 Cart <b id="cartCount">0</b></a></nav>
+  <nav class="actions"><a class="icon-action" href="wishlist.html">♡ <span>Wishlist</span><b id="wishlistCount">0</b></a><a class="icon-action cart-link active-action" href="cart.html">🛒 <span>Cart</span><b id="cartCount">0</b></a></nav>
 </header>
-<nav class="categories"><a href="index.html#products">⌂ All</a><a href="index.html#products">⌂ Home Decor</a><a href="index.html#products">🎁 Gifts</a><a href="index.html#products">▧ Wall Art</a><a href="index.html#products">▣ Office</a><a href="index.html#products">◇ Organizers</a><a href="index.html#products">⬡ Models</a></nav>
+<nav class="categories"><a href="index.html#products">⌂ All</a><a href="index.html#products">⌂ Home Decor</a><a href="index.html#products">🎁 Gifts</a><a href="index.html#products">▧ Wall Art</a><a href="index.html#products">▣ Office</a><a href="index.html#products">♧ Toys</a><a href="index.html#products">◇ Organizers</a><a href="index.html#products">⬡ Models</a></nav>
 
 <main class="page">
   <div class="breadcrumbs">Home &nbsp;›&nbsp; Cart</div>
-  <div class="page-title"><div><h1>Your Cart</h1><p>Review your selected items and proceed to checkout.</p></div><a class="outline-btn" href="index.html#products">← Continue Shopping</a></div>
+  <div class="page-title"><div><h1>Your Cart</h1><p>Review your selected designs before creating a requirement.</p></div><a class="outline-btn" href="index.html#products">← Continue Shopping</a></div>
 
   <div id="cartEmpty" class="empty hidden"><div>🛒</div><h2>Your cart is empty</h2><p>Add a few laser-cut designs to get started.</p><a class="btn" href="index.html#products">Explore Products</a></div>
 
@@ -27,18 +28,20 @@
       <div id="cartItems"></div>
     </section>
     <aside class="summary">
-      <h2>Order Summary</h2>
+      <h2>Requirement Summary</h2>
       <div><span>Items</span><strong id="summaryItems">₹0</strong></div>
       <div><span>Shipping</span><strong>₹0</strong></div>
       <div><span>Discount</span><strong class="discount">- ₹0</strong></div>
       <hr>
       <div class="grand"><span>Total</span><strong id="summaryTotal">₹0</strong></div>
-      <a id="checkoutBtn" class="btn full" href="checkout.html">Proceed to Checkout →</a>
-      <div class="trust"><span>♢<small>Secure<br>Payment</small></span><span>♧<small>Fast<br>Delivery</small></span><span>◇<small>Easy<br>Returns</small></span></div>
+      <a id="checkoutBtn" class="btn full" href="checkout.html">Create Requirement →</a>
+      <p class="summary-note">A receipt will be prepared with your selected items. Then you can enter your contact and delivery details.</p>
+      <div class="trust"><span>♢<small>Secure<br>Request</small></span><span>▤<small>Item<br>Receipt</small></span><span>◇<small>Easy<br>Updates</small></span></div>
     </aside>
   </div>
 </main>
-<footer><div><a class="brand footer-brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a><p>Unique laser cut designs for a creative world.</p></div><div><h4>Quick Links</h4><a href="index.html">Home</a><a href="index.html#products">Products</a><a href="cart.html">Cart</a></div><div><h4>Help & Support</h4><a href="#">FAQ</a><a href="#">Privacy Policy</a></div><div><h4>Mini Project</h4><p>Supabase Backend</p><p>Vercel Deployment</p></div></footer>
+<footer><div><a class="brand footer-brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a><p>Unique laser cut designs for a creative world.</p></div><div><h4>Quick Links</h4><a href="index.html">Home</a><a href="wishlist.html">Wishlist</a><a href="cart.html">Cart</a></div><div><h4>Help & Support</h4><a href="#">FAQ</a><a href="#">Privacy Policy</a></div><div><h4>Mini Project</h4><p>Supabase Backend</p><p>Vercel Deployment</p></div></footer>
+<div id="toast" class="toast"></div>
 <script src="app.js"></script>
 <script>window.addEventListener('DOMContentLoaded', renderCart);</script>
 </body>

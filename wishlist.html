@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#16202b">
+  <title>CutNest | Wishlist</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="page-enter">
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a>
+  <div class="search"><span>⌕</span><input placeholder="Search products..." onfocus="location.href='index.html#products'"></div>
+  <nav class="actions"><a class="icon-action active-action" href="wishlist.html">♡ <span>Wishlist</span><b id="wishlistCount">0</b></a><a class="icon-action cart-link" href="cart.html">🛒 <span>Cart</span><b id="cartCount">0</b></a></nav>
+</header>
+<nav class="categories"><a href="index.html#products">⌂ All</a><a href="index.html#products">⌂ Home Decor</a><a href="index.html#products">🎁 Gifts</a><a href="index.html#products">▧ Wall Art</a><a href="index.html#products">▣ Office</a><a href="index.html#products">♧ Toys</a><a href="index.html#products">◇ Organizers</a><a href="index.html#products">⬡ Models</a></nav>
+
+<main class="page">
+  <div class="breadcrumbs">Home &nbsp;›&nbsp; Wishlist</div>
+  <div class="page-title"><div><h1>Your Wishlist</h1><p>Save designs you love and add them to your cart anytime.</p></div><a class="outline-btn" href="index.html#products">← Continue Shopping</a></div>
+  <div id="wishlistEmpty" class="empty hidden"><div>♡</div><h2>Your wishlist is empty</h2><p>Tap the heart on any product to save it here.</p><a class="btn" href="index.html#products">Explore Products</a></div>
+  <div id="wishlistGrid" class="wishlist-grid"></div>
+</main>
+<footer><div><a class="brand footer-brand" href="index.html"><span class="brand-mark">✦</span><span>Cut<span>Nest</span><small>Design · Cut · Create</small></span></a><p>Unique laser cut designs for a creative world.</p></div><div><h4>Quick Links</h4><a href="index.html">Home</a><a href="cart.html">Cart</a></div><div><h4>Help & Support</h4><a href="#">FAQ</a><a href="#">Privacy Policy</a></div><div><h4>Mini Project</h4><p>Supabase Backend</p><p>Vercel Deployment</p></div></footer>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+<script>window.addEventListener('DOMContentLoaded', renderWishlist);</script>
+</body>
+</html>

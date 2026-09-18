@@ -1,9 +1,9 @@
-/* CutNest mini-project
-   Supabase is optional for the demo UI. To activate the backend,
-   put your Supabase project URL and anon key below, then run supabase.sql.
+/* CutNest - e-commerce mini project
+   Supabase connection: keep your existing Project URL + Publishable key here.
+   Never use a Supabase secret/service-role key in this frontend file.
 */
-const SUPABASE_URL = "https://igtjtflqnitogzasfwxh.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_FJqhD6RZLg8ipNGLKGL8NA_A1q7anAY";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 const db = (window.supabase && SUPABASE_URL.startsWith("http"))
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -27,78 +27,190 @@ const demoProducts = [
 
 let products = [...demoProducts];
 let cart = JSON.parse(localStorage.getItem("cutnest_cart") || "[]");
+let wishlist = JSON.parse(localStorage.getItem("cutnest_wishlist") || "[]");
 
-function money(n){return "₹"+Number(n).toLocaleString("en-IN")}
-function saveCart(){localStorage.setItem("cutnest_cart",JSON.stringify(cart)); updateCartCount()}
-function updateCartCount(){document.querySelectorAll("#cartCount").forEach(e=>e.textContent=cart.reduce((s,i)=>s+i.qty,0))}
-function toast(msg){const t=document.getElementById("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
-function addToCart(id){
- const p=products.find(x=>String(x.id)===String(id)); if(!p)return;
- const item=cart.find(x=>String(x.id)===String(id));
- if(item)item.qty++; else cart.push({id:p.id,name:p.name,price:p.price,category:p.category,icon:p.icon,image:p.image||"",qty:1});
- saveCart(); toast(p.name+" added to cart");
+function money(n){ return "₹" + Number(n || 0).toLocaleString("en-IN"); }
+function saveCart(){ localStorage.setItem("cutnest_cart", JSON.stringify(cart)); updateCounts(); }
+function saveWishlist(){ localStorage.setItem("cutnest_wishlist", JSON.stringify(wishlist)); updateCounts(); }
+function updateCounts(){
+  document.querySelectorAll("#cartCount").forEach(e => e.textContent = cart.reduce((s,i)=>s+Number(i.qty||0),0));
+  document.querySelectorAll("#wishlistCount").forEach(e => e.textContent = wishlist.length);
 }
-function removeFromCart(id){cart=cart.filter(x=>String(x.id)!==String(id));saveCart();renderCart()}
-function changeQty(id,delta){const x=cart.find(i=>String(i.id)===String(id));if(!x)return;x.qty+=delta;if(x.qty<=0)removeFromCart(id);else{saveCart();renderCart()}}
+function toast(msg){
+  const t = document.getElementById("toast"); if(!t) return;
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(window.cutnestToastTimer);
+  window.cutnestToastTimer = setTimeout(()=>t.classList.remove("show"), 1800);
+}
+function isWishlisted(id){ return wishlist.some(x => String(x.id) === String(id)); }
+function toggleWishlist(id){
+  const p = products.find(x => String(x.id) === String(id)); if(!p) return;
+  if(isWishlisted(id)){
+    wishlist = wishlist.filter(x => String(x.id) !== String(id));
+    toast("Removed from wishlist");
+  } else {
+    wishlist.push({id:p.id,name:p.name,price:p.price,category:p.category,icon:p.icon,image:p.image||""});
+    toast("Added to wishlist");
+  }
+  saveWishlist();
+  if(document.getElementById("productGrid")) renderProducts();
+  if(document.getElementById("wishlistGrid")) renderWishlist();
+}
+function addToCart(id){
+  const p = products.find(x => String(x.id) === String(id)); if(!p) return;
+  const item = cart.find(x => String(x.id) === String(id));
+  if(item){ item.qty++; if(!item.image && p.image) item.image = p.image; }
+  else cart.push({id:p.id,name:p.name,price:p.price,category:p.category,icon:p.icon,image:p.image||"",qty:1});
+  saveCart(); toast(p.name + " added to cart");
+}
+function removeFromCart(id){ cart = cart.filter(x => String(x.id) !== String(id)); saveCart(); renderCart(); }
+function changeQty(id,delta){
+  const x = cart.find(i => String(i.id) === String(id)); if(!x) return;
+  x.qty += delta;
+  if(x.qty <= 0) removeFromCart(id); else { saveCart(); renderCart(); }
+}
 function productImage(p){
- if(p.image)return `<img src="${p.image}" alt="${p.name}">`;
- return `<div class="placeholder">${p.icon||"✦"}</div>`;
+  if(p.image) return `<img loading="lazy" src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`;
+  return `<img loading="lazy" src="" alt=""><div class="placeholder">${p.icon||"✦"}</div>`;
 }
 async function loadProducts(){
- if(db){
-   const {data,error}=await db.from("products").select("*").order("created_at",{ascending:true});
-   if(!error && data?.length){products=data;return}
- }
+  if(db){
+    const {data,error} = await db.from("products").select("*").order("created_at",{ascending:true});
+    if(!error && data?.length){
+      products = data;
+      // Refresh saved wishlist/cart images after Supabase products load.
+      cart = cart.map(item => {
+        const p = products.find(x => String(x.id) === String(item.id) || x.name === item.name);
+        return p ? {...item,id:p.id,price:p.price,category:p.category,image:p.image||item.image||""} : item;
+      });
+      wishlist = wishlist.map(item => {
+        const p = products.find(x => String(x.id) === String(item.id) || x.name === item.name);
+        return p ? {...item,id:p.id,price:p.price,category:p.category,image:p.image||item.image||""} : item;
+      });
+      saveCart(); saveWishlist();
+    } else if(error) console.warn("Supabase products could not be loaded:", error.message);
+  }
 }
 function renderProducts(list=products){
- const grid=document.getElementById("productGrid");if(!grid)return;
- grid.innerHTML=list.map(p=>`<article class="card">
-  <div class="product-img">${productImage(p)}</div>
-  <div class="card-body"><button class="wishlist" onclick="toast('Wishlist demo')">♡</button>
-  <div class="category">${p.category}</div><h3>${p.name}</h3>
-  <div class="price-row"><span class="price">${money(p.price)}</span><button class="add" onclick="addToCart('${p.id}')">🛒</button></div></div>
- </article>`).join("");
- const r=document.getElementById("resultText");if(r)r.textContent=`${list.length} designs available`;
+  const grid = document.getElementById("productGrid"); if(!grid) return;
+  grid.innerHTML = list.map(p => `<article class="card">
+    <div class="product-img">${productImage(p)}</div>
+    <div class="card-body">
+      <button class="wishlist ${isWishlisted(p.id)?"liked":""}" aria-label="${isWishlisted(p.id)?"Remove from wishlist":"Add to wishlist"}" onclick="toggleWishlist('${p.id}')">${isWishlisted(p.id)?"♥":"♡"}</button>
+      <div class="category">${p.category}</div>
+      <h3>${p.name}</h3>
+      <div class="card-actions"><span class="product-action-label">Laser-ready design</span><button class="add" aria-label="Add ${p.name} to cart" onclick="addToCart('${p.id}')">🛒</button></div>
+    </div>
+  </article>`).join("");
+  const r = document.getElementById("resultText"); if(r) r.textContent = `${list.length} designs available`;
 }
-function initHome(){
- updateCartCount(); loadProducts().then(()=>renderProducts());
- const search=document.getElementById("searchInput");
- search?.addEventListener("input",e=>{const q=e.target.value.toLowerCase();renderProducts(products.filter(p=>(p.name+" "+p.category).toLowerCase().includes(q)))});
- document.querySelectorAll("[data-category]").forEach(a=>a.addEventListener("click",()=>renderProducts(products.filter(p=>p.category===a.dataset.category))));
- document.getElementById("sortSelect")?.addEventListener("change",e=>{
-  let x=[...products];if(e.target.value==="low")x.sort((a,b)=>a.price-b.price);if(e.target.value==="high")x.sort((a,b)=>b.price-a.price);if(e.target.value==="name")x.sort((a,b)=>a.name.localeCompare(b.name));renderProducts(x);
- });
+function setActiveCategory(target){
+  document.querySelectorAll(".categories a").forEach(a => a.classList.remove("active"));
+  if(target) target.classList.add("active");
 }
-function cartTotals(){return {items:cart.reduce((s,i)=>s+i.price*i.qty,0),count:cart.reduce((s,i)=>s+i.qty,0)}}
+async function initHome(){
+  updateCounts();
+  await loadProducts();
+  renderProducts();
+  const search = document.getElementById("searchInput");
+  search?.addEventListener("input", e => {
+    const q = e.target.value.toLowerCase().trim();
+    renderProducts(products.filter(p => (p.name+" "+p.category).toLowerCase().includes(q)));
+  });
+  document.querySelectorAll("[data-category]").forEach(a => a.addEventListener("click", e => {
+    e.preventDefault(); setActiveCategory(a);
+    const category = a.dataset.category;
+    renderProducts(products.filter(p => p.category === category));
+    document.getElementById("products")?.scrollIntoView({behavior:"smooth"});
+  }));
+  document.querySelector(".categories a.active")?.addEventListener("click", e => {
+    e.preventDefault(); setActiveCategory(e.currentTarget); renderProducts(products);
+    document.getElementById("products")?.scrollIntoView({behavior:"smooth"});
+  });
+  document.getElementById("sortSelect")?.addEventListener("change", e => {
+    let x = [...products];
+    if(e.target.value === "low") x.sort((a,b)=>a.price-b.price);
+    if(e.target.value === "high") x.sort((a,b)=>b.price-a.price);
+    if(e.target.value === "name") x.sort((a,b)=>a.name.localeCompare(b.name));
+    renderProducts(x);
+  });
+}
+function cartTotals(){ return {items:cart.reduce((s,i)=>s+Number(i.price)*Number(i.qty),0),count:cart.reduce((s,i)=>s+Number(i.qty),0)}; }
 function renderCart(){
- updateCartCount();const empty=document.getElementById("cartEmpty"),layout=document.getElementById("cartLayout");
- if(!cart.length){empty?.classList.remove("hidden");layout?.classList.add("hidden");return}
- empty?.classList.add("hidden");layout?.classList.remove("hidden");
- const el=document.getElementById("cartItems");
- el.innerHTML=cart.map(i=>`<div class="cart-item">
-  <div class="cart-product"><div class="product-img" style="width:75px;height:65px">${i.image?`<img src="${i.image}" alt="">`:`<div class="placeholder" style="font-size:28px">${i.icon||"✦"}</div>`}</div><div><strong>${i.name}</strong><button class="remove" onclick="removeFromCart('${i.id}')">🗑 Remove</button></div></div>
-  <div>${money(i.price)}</div><div class="qty"><button onclick="changeQty('${i.id}',-1)">−</button><span>${i.qty}</span><button onclick="changeQty('${i.id}',1)">+</button></div><div><strong>${money(i.price*i.qty)}</strong></div>
- </div>`).join("");
- const t=cartTotals();document.getElementById("summaryItems").textContent=money(t.items);document.getElementById("summaryTotal").textContent=money(t.items);
+  updateCounts();
+  const empty = document.getElementById("cartEmpty"), layout = document.getElementById("cartLayout");
+  if(!empty || !layout) return;
+  if(!cart.length){ empty.classList.remove("hidden"); layout.classList.add("hidden"); return; }
+  empty.classList.add("hidden"); layout.classList.remove("hidden");
+  const el = document.getElementById("cartItems");
+  el.innerHTML = cart.map(i => `<div class="cart-item">
+    <div class="cart-product"><div class="product-img cart-thumb">${i.image?`<img loading="lazy" src="${i.image}" alt="${i.name}">`:`<div class="placeholder">${i.icon||"✦"}</div>`}</div><div><strong>${i.name}</strong><small>${i.category||"Laser-cut design"}</small><button class="remove" onclick="removeFromCart('${i.id}')">Remove</button></div></div>
+    <div class="cart-price">${money(i.price)}</div>
+    <div class="qty"><button aria-label="Decrease quantity" onclick="changeQty('${i.id}',-1)">−</button><span>${i.qty}</span><button aria-label="Increase quantity" onclick="changeQty('${i.id}',1)">+</button></div>
+    <div class="line-total"><strong>${money(i.price*i.qty)}</strong></div>
+  </div>`).join("");
+  const t = cartTotals();
+  document.getElementById("summaryItems").textContent = money(t.items);
+  document.getElementById("summaryTotal").textContent = money(t.items);
+}
+function renderWishlist(){
+  updateCounts();
+  const grid = document.getElementById("wishlistGrid"), empty = document.getElementById("wishlistEmpty");
+  if(!grid || !empty) return;
+  if(!wishlist.length){ grid.innerHTML=""; empty.classList.remove("hidden"); return; }
+  empty.classList.add("hidden");
+  grid.innerHTML = wishlist.map(p => `<article class="wishlist-card">
+    <div class="product-img">${productImage(p)}</div>
+    <div class="card-body"><button class="wishlist liked" aria-label="Remove from wishlist" onclick="toggleWishlist('${p.id}')">♥</button><div class="category">${p.category}</div><h3>${p.name}</h3><div class="card-actions"><span class="product-action-label">Saved design</span><button class="add" onclick="addToCart('${p.id}')">🛒</button></div></div>
+  </article>`).join("");
 }
 function renderCheckout(){
- updateCartCount();const box=document.getElementById("checkoutProducts"),form=document.getElementById("checkoutForm");
- if(!cart.length){box.innerHTML="<p>Your cart is empty.</p>";form.classList.add("hidden");return}
- box.innerHTML=cart.map(i=>`<div class="checkout-product"><span>${i.name} × ${i.qty}</span><strong>${money(i.price*i.qty)}</strong></div>`).join("");
- document.getElementById("checkoutTotal").textContent=money(cartTotals().items);
- form.addEventListener("submit",placeOrder);
+  updateCounts();
+  const layout = document.getElementById("checkoutLayout"), empty = document.getElementById("checkoutEmpty");
+  if(!layout || !empty) return;
+  if(!cart.length){ layout.classList.add("hidden"); empty.classList.remove("hidden"); return; }
+  empty.classList.add("hidden"); layout.classList.remove("hidden");
+  const now = new Date();
+  document.getElementById("receiptDate").textContent = now.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});
+  document.getElementById("checkoutProducts").innerHTML = cart.map(i => `<div class="receipt-item"><div><strong>${i.name}</strong><small>${i.category||"Laser-cut design"} · Qty ${i.qty}</small></div><strong>${money(i.price*i.qty)}</strong></div>`).join("");
+  document.getElementById("checkoutTotal").textContent = money(cartTotals().items);
+  const form = document.getElementById("checkoutForm");
+  form?.addEventListener("submit",placeOrder,{once:true});
 }
 async function placeOrder(e){
- e.preventDefault();if(!cart.length)return;
- const customer={name:document.getElementById("name").value,email:document.getElementById("email").value,phone:document.getElementById("phone").value,address:document.getElementById("address").value};
- let orderId="CN-"+Date.now().toString().slice(-8);
- if(db){
-   const {data,error}=await db.from("orders").insert({customer_name:customer.name,email:customer.email,phone:customer.phone,address:customer.address,total:cartTotals().items,status:"Placed"}).select("id").single();
-   if(!error && data){
-     orderId=data.id;
-     await db.from("order_items").insert(cart.map(i=>({order_id:data.id,product_id:i.id,product_name:i.name,price:i.price,quantity:i.qty})));
-   }
- }
- cart=[];saveCart();document.getElementById("checkoutForm").classList.add("hidden");document.getElementById("success").classList.remove("hidden");document.getElementById("orderNumber").textContent="Order ID: "+orderId;
+  e.preventDefault(); if(!cart.length) return;
+  const customer = {
+    name:document.getElementById("name").value.trim(),
+    email:document.getElementById("email").value.trim(),
+    phone:document.getElementById("phone").value.trim(),
+    address:document.getElementById("address").value.trim(),
+    notes:document.getElementById("notes")?.value.trim() || ""
+  };
+  const selected = [...cart];
+  const total = cartTotals().items;
+  let orderId = "CN-" + Date.now().toString().slice(-8);
+  let savedToSupabase = false;
+  if(db){
+    const {data,error} = await db.from("orders").insert({customer_name:customer.name,email:customer.email,phone:customer.phone,address:customer.address,total,status:"Placed"}).select("id").single();
+    if(!error && data){
+      orderId = data.id; savedToSupabase = true;
+      const {error:itemError} = await db.from("order_items").insert(selected.map(i=>({order_id:data.id,product_id:i.id,product_name:i.name,price:i.price,quantity:i.qty})));
+      if(itemError) console.warn("Order items were not saved:", itemError.message);
+    } else if(error){
+      console.warn("Supabase order was not saved:", error.message);
+    }
+  }
+  document.getElementById("checkoutLayout").classList.add("hidden");
+  document.getElementById("finalReceipt").classList.remove("hidden");
+  document.getElementById("orderNumber").textContent = `Requirement ID: ${orderId}${savedToSupabase?" · Saved":" · Demo receipt"}`;
+  document.getElementById("customerReceipt").innerHTML = `<div><span>Name</span><strong>${escapeHtml(customer.name)}</strong></div><div><span>Mobile</span><strong>${escapeHtml(customer.phone)}</strong></div><div><span>Email</span><strong>${escapeHtml(customer.email)}</strong></div><div><span>Address</span><strong>${escapeHtml(customer.address)}</strong></div>${customer.notes?`<div><span>Special Requirement</span><strong>${escapeHtml(customer.notes)}</strong></div>`:""}`;
+  document.getElementById("finalItems").innerHTML = selected.map(i=>`<div class="receipt-item"><div><strong>${escapeHtml(i.name)}</strong><small>${escapeHtml(i.category||"Laser-cut design")} · Qty ${i.qty}</small></div><strong>${money(i.price*i.qty)}</strong></div>`).join("");
+  document.getElementById("finalTotal").textContent = money(total);
+  cart=[]; saveCart();
+  window.scrollTo({top:0,behavior:"smooth"});
 }
-if(document.getElementById("productGrid"))initHome();
+function escapeHtml(value){
+  return String(value).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));
+}
+
+if(document.getElementById("productGrid")) initHome();
